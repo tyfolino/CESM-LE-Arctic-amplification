@@ -95,11 +95,9 @@ qsw_strato = xr.open_mfdataset(lead+'q_strato.nc',preprocess=preprocess,combine=
                             concat_dim='ens').FSNT
 Wconv = xr.open_mfdataset(lead+'Wconv.nc',preprocess=preprocess,combine='nested',
                      concat_dim='ens').Wconv
-dSIC = xr.open_mfdataset(lead+'dSIC.nc',preprocess=preprocess,combine='nested',
-                         concat_dim='ens').dSIC
 
 # read in CO2 RF
-fin = xr.open_dataset('/dx02/janoski/cesm/inst_rf/CAM4_inst_4xCO2_RF_2yr_regridded.nc',
+fin = xr.open_dataset('/dx02/janoski/cesm/inst_rf/forcing.TOA.4xCO2.inst.regridded.nc',
                       use_cftime=True)
 
 if(m==1):
@@ -113,7 +111,7 @@ elif(m==7):
     CO2SW_sfc = fin.FSNS.roll(time=-181,roll_coords=True)
     CO2LW_sfc = fin.FLNS.roll(time=-181,roll_coords=True)
 CO2_TOA = CO2SW_TOA + CO2LW_TOA
-CO2_sfc = CO2SW_SFC + CO2LW_SFC
+CO2_sfc = CO2SW_sfc + CO2LW_sfc
 CO2_TOA['time'] = Wconv.time.data
 CO2_sfc['time'] = Wconv.time.data
 
@@ -136,12 +134,12 @@ print(pathout)
 
 to_avg = [AHT,dEdt,alb_toa,alb_sfc,clw_toa,clw_sfc,csw_toa,csw_sfc,dTS,dSAT,
          lapse,planck,qlw_toa,qsw_toa,qlw_sfc,qsw_sfc,Sconv,Fsfc,dLHFLX,dSHFLX,
-         Ta,Ts,T_strato,qlw_strato,qsw_strato,Wconv,CO2_TOA]
+         Ta,Ts,T_strato,qlw_strato,qsw_strato,Wconv,CO2_TOA,CO2_sfc]
 out_names = ['AHT.nc','dEdt.nc','alb_TOA.nc','alb_sfc.nc','cloud_LW_TOA.nc','cloud_LW_sfc.nc',
              'cloud_SW_TOA.nc','cloud_SW_sfc.nc','dTS.nc','dSAT.nc','lapse_tropo_TOA.nc','planck_tropo_TOA.nc','q_LW_tropo_TOA.nc',
              'q_SW_tropo_TOA.nc','q_LW_tropo_sfc.nc','q_SW_tropo_sfc.nc','Sconv.nc','Fsfc.nc','dLHFLX.nc','dSHFLX.nc',
              'Ta_tropo_sfc.nc','Ts_tropo_sfc.nc','T_strato_TOA.nc','q_LW_strato_TOA.nc','q_SW_strato_TOA.nc',
-             'Wconv.nc','CO2_TOA.nc']
+             'Wconv.nc','CO2_TOA.nc','CO2_sfc.nc']
 
 for i in range(len(to_avg)):
     with ProgressBar():

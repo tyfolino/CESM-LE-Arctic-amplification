@@ -2,7 +2,7 @@
 # All-sky and clear-sky feedbacks are made in Albedo/Q/T_feedbacks.py
 
 # By: Ty Janoski
-# Edited: 12.28.21
+# Edited: 08.18.22
 
 # import statements
 
@@ -38,10 +38,10 @@ if(m!=1 and m!=7):
     sys.exit()
 
 if(m==7):
-    inst_RF = xr.open_dataset('/dx02/janoski/cesm/inst_rf/CAM4_inst_4xCO2_RF_2yr_regridded.nc').roll(time=-181,roll_coords=True)
+    inst_RF = xr.open_dataset('/dx02/janoski/cesm/inst_rf/forcing.TOA.4xCO2.inst.regridded.nc').roll(time=-181,roll_coords=True)
     end=51
 else:
-    inst_RF = xr.open_dataset('/dx02/janoski/cesm/inst_rf/CAM4_inst_4xCO2_RF_2yr_regridded.nc')
+    inst_RF = xr.open_dataset('/dx02/janoski/cesm/inst_rf/forcing.TOA.4xCO2.inst.regridded.nc')
     end=101
 
 dRFLW_TOA = np.array(-1 * (inst_RF.FLNTC - inst_RF.FLNT))
@@ -50,66 +50,66 @@ dRFLW_SFC = np.array(-1 * (inst_RF.FLNSC - inst_RF.FLNS))
 dRFSW_SFC = np.array(inst_RF.FSNSC - inst_RF.FSNS)
 
 #### note: convention at TOA is that positive = downward radiative flux (so negative values = cooling)
-# print('Doing CAM4 TOA cloud feedbacks...')
+print('Doing CAM4 TOA cloud feedbacks...')
 
-# for e in range(1,end,1):
-#     if(e%5==0):
-#         print(e)
-#     # read in T feedbacks
-#     lapse = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_lapse_tropo_TOA.nc',
-#                             use_cftime=True)
-#     planck = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_Planck_tropo_TOA.nc',
-#                              use_cftime=True)
-#     dT = (lapse.FLNTC - lapse.FLNT) + (planck.FLNTC - planck.FLNT)
+for e in range(1,end,1):
+    if(e%5==0):
+        print(e)
+    # read in T feedbacks
+    lapse = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_lapse_tropo_TOA.nc',
+                            use_cftime=True)
+    planck = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_Planck_tropo_TOA.nc',
+                             use_cftime=True)
+    dT = (lapse.FLNTC - lapse.FLNT) + (planck.FLNTC - planck.FLNT)
 
-#     # Q feedbacks
-#     Q = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'
-#                         +str(f"{e:02d}")+'.h1_q_tropo.nc',
-#                         use_cftime=True)
-#     dQ_LW = Q.FLNTC - Q.FLNT
-#     dQ_SW = Q.FSNTC - Q.FSNT
+    # Q feedbacks
+    Q = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'
+                        +str(f"{e:02d}")+'.h1_q_tropo.nc',
+                        use_cftime=True)
+    dQ_LW = Q.FLNTC - Q.FLNT
+    dQ_SW = Q.FSNTC - Q.FSNT
 
-#     # albedo
-#     α = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+
-#                         str(f"{e:02d}")+'.h1_albedo.nc',
-#                         use_cftime=True)
-#     dα = (α.FSNTC - α.FSNT).fillna(0)
+    # albedo
+    α = xr.open_dataset('/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+
+                        str(f"{e:02d}")+'.h1_albedo.nc',
+                        use_cftime=True)
+    dα = (α.FSNTC - α.FSNT).fillna(0)
     
-#     # calc change in CRE
-#     FLNT = read_in('ctrl',m,e,'FLNT').FLNT
-#     FLNTC = read_in('ctrl',m,e,'FLNTC').FLNTC
-#     FSNT = read_in('ctrl',m,e,'FSNT').FSNT
-#     FSNTC = read_in('ctrl',m,e,'FSNTC').FSNTC
+    # calc change in CRE
+    FLNT = read_in('ctrl',m,e,'FLNT').FLNT
+    FLNTC = read_in('ctrl',m,e,'FLNTC').FLNTC
+    FSNT = read_in('ctrl',m,e,'FSNT').FSNT
+    FSNTC = read_in('ctrl',m,e,'FSNTC').FSNTC
 
-#     CRE_ctrl_SW = (FSNT - FSNTC) # it's SW - LW because LW is positive upwards (we want it positive downwards)
-#     CRE_ctrl_LW = -1*(FLNT - FLNTC)
+    CRE_ctrl_SW = (FSNT - FSNTC) # it's SW - LW because LW is positive upwards (we want it positive downwards)
+    CRE_ctrl_LW = -1*(FLNT - FLNTC)
 
-#     FLNT = read_in('4xCO2',m,e,'FLNT').FLNT
-#     FLNTC = read_in('4xCO2',m,e,'FLNTC').FLNTC
-#     FSNT = read_in('4xCO2',m,e,'FSNT').FSNT
-#     FSNTC = read_in('4xCO2',m,e,'FSNTC').FSNTC
+    FLNT = read_in('4xCO2',m,e,'FLNT').FLNT
+    FLNTC = read_in('4xCO2',m,e,'FLNTC').FLNTC
+    FSNT = read_in('4xCO2',m,e,'FSNT').FSNT
+    FSNTC = read_in('4xCO2',m,e,'FSNTC').FSNTC
 
-#     CRE_exp_SW = (FSNT - FSNTC)
-#     CRE_exp_LW = -1*(FLNT - FLNTC)
+    CRE_exp_SW = (FSNT - FSNTC)
+    CRE_exp_LW = -1*(FLNT - FLNTC)
 
-#     dCRE_SW = CRE_exp_SW - CRE_ctrl_SW
-#     dCRE_LW = CRE_exp_LW - CRE_ctrl_LW
+    dCRE_SW = CRE_exp_SW - CRE_ctrl_SW
+    dCRE_LW = CRE_exp_LW - CRE_ctrl_LW
 
-#     # basis for adjustment method is to adjust the change in CRE for environmental masking of other radiative perturbations
-#     # albedo terms has some nans, so just turn them into 0s
-#     cloud_SW = dCRE_SW + dQ_SW + dα + dRFSW_TOA
-#     cloud_LW = dCRE_LW + dQ_LW + dT + dRFLW_TOA
+    # basis for adjustment method is to adjust the change in CRE for environmental masking of other radiative perturbations
+    # albedo terms has some nans, so just turn them into 0s
+    cloud_SW = dCRE_SW + dQ_SW + dα + dRFSW_TOA
+    cloud_LW = dCRE_LW + dQ_LW + dT + dRFLW_TOA
     
-#     out_SW = xr.merge([cloud_SW.rename('cloud_SW'),dCRE_SW.rename('dCRE_SW'),dQ_SW.rename('dQ_SW'),dα.rename('dα')])
-#     out_LW = xr.merge([cloud_LW.rename('cloud_LW'),dCRE_LW.rename('dCRE_LW'),dQ_LW.rename('dQ_LW'),dT.rename('dT')])
+    out_SW = xr.merge([cloud_SW.rename('cloud_SW'),dCRE_SW.rename('dCRE_SW'),dQ_SW.rename('dQ_SW'),dα.rename('dα')])
+    out_LW = xr.merge([cloud_LW.rename('cloud_LW'),dCRE_LW.rename('dCRE_LW'),dQ_LW.rename('dQ_LW'),dT.rename('dT')])
     
-#     pathout_SW = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(
-#         f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_cloud_SW_TOA.nc'
-#     pathout_LW = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(
-#         f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_cloud_LW_TOA.nc'
+    pathout_SW = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(
+        f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_cloud_SW_TOA.nc'
+    pathout_LW = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(
+        f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_cloud_LW_TOA.nc'
     
-#     out_SW.to_netcdf(pathout_SW)
-#     out_LW.to_netcdf(pathout_LW)
+    out_SW.to_netcdf(pathout_SW)
+    out_LW.to_netcdf(pathout_LW)
     
 
 
