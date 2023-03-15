@@ -14,8 +14,8 @@ if(m!=1 and m!=7):
     print("That's not 1 or 7.")
     sys.exit()
     
-r = str(input('Enter arc or glb for the Arctic or global average, respectively: '))
-if(r!='arc' and r != 'glb'):
+r = str(input('Enter arc, glb, or ant for the Arctic, global, or Antarcic average, respectively: '))
+if(r!='arc' and r != 'glb' and r != 'ant'):
     print('Invalid input.')
     sys.exit()
     
