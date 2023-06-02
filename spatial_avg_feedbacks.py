@@ -109,7 +109,7 @@ elif(m==7):
     CO2SW_TOA = fin.FSNT.roll(time=-181,roll_coords=True)
     CO2LW_TOA = -1 * fin.FLNT.roll(time=-181,roll_coords=True)
     CO2SW_sfc = fin.FSNS.roll(time=-181,roll_coords=True)
-    CO2LW_sfc = fin.FLNS.roll(time=-181,roll_coords=True)
+    CO2LW_sfc = -1 * fin.FLNS.roll(time=-181,roll_coords=True)
 CO2_TOA = CO2SW_TOA + CO2LW_TOA
 CO2_sfc = CO2SW_sfc + CO2LW_sfc
 CO2_TOA['time'] = Wconv.time.data
@@ -202,23 +202,23 @@ print(pathout)
 # this portion is a little different because the Arctic AHT is calculated specifically at 70N
 # so there is no spatial averaging needed.
 
-Fwall = xr.open_mfdataset(lead+'AHT_70N_expl.nc',preprocess=preprocess,combine='nested',
-                     concat_dim='ens')
-AHT_expl = Fwall.MSE
-Wconv_expl = Fwall.VQ
-Sconv_expl = Fwall.VZ+Fwall.VT
+# Fwall = xr.open_mfdataset(lead+'AHT_60S_expl.nc',preprocess=preprocess,combine='nested',
+#                      concat_dim='ens')
+# AHT_expl = Fwall.MSE
+# Wconv_expl = Fwall.VQ
+# Sconv_expl = Fwall.VZ+Fwall.VT
 
-if(m==1):
-    pathout = '/dx02/janoski/cesm/spat_avg_feedbacks/all/b40.1850.cam5-lens.01.glb_'
-elif(m==7):
-    pathout = '/dx02/janoski/cesm/spat_avg_feedbacks/all/b40.1850.cam5-lens.07.glb_'
+# if(m==1):
+#     pathout = '/dx02/janoski/cesm/spat_avg_feedbacks/all/b40.1850.cam5-lens.01.glb_'
+# elif(m==7):
+#     pathout = '/dx02/janoski/cesm/spat_avg_feedbacks/all/b40.1850.cam5-lens.07.glb_'
     
-to_avg = [AHT_expl,Wconv_expl,Sconv_expl]
-out_names = ['AHT_expl.nc','Wconv_expl.nc','Sconv_expl.nc']
+# to_avg = [AHT_expl,Wconv_expl,Sconv_expl]
+# out_names = ['AHT_expl.nc','Wconv_expl.nc','Sconv_expl.nc']
 
-for i in range(len(to_avg)):
-    (to_avg[i]*0).to_netcdf(pathout+out_names[i])
+# for i in range(len(to_avg)):
+#     (to_avg[i]*0).to_netcdf(pathout+out_names[i])
     
-pathout = pathout.replace('glb','arc')
-for i in range(len(to_avg)):
-    to_avg[i].to_netcdf(pathout+out_names[i])
+# pathout = pathout.replace('glb','ant')
+# for i in range(len(to_avg)):
+#     to_avg[i].to_netcdf(pathout+out_names[i])

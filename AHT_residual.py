@@ -2,7 +2,7 @@
 # and to find difference after 4xCO2
 
 # By: Ty Janoski
-# Updated: 01.18.22
+# Updated: 03.27.23
 
 # import statments
 import numpy as np
@@ -56,7 +56,7 @@ elif(m==7):
 # do this for ctrl annd 4xCO2 simulations
 for s in ['ctrl','4xCO2']:
     # iterate through each ensemble member
-    for e in range(1,end,1):
+    for e in range(51,end,1):
         print(e)
 
         # read in control simulations

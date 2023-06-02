@@ -2,7 +2,7 @@
 # and to find difference after 4xCO2
 
 # By: Ty Janoski
-# Updated: 12.30.21
+# Updated: 03.27.23
 
 # import statments
 import numpy as np
@@ -42,11 +42,11 @@ elif(m==7):
 for e in range(1,end,1):
     if(e%5==0):
         print(e)
-    ctrl = read_in('ctrl',m,e,'Fwall_70N_expl')
-    exp = read_in('4xCO2',m,e,'Fwall_70N_expl')
+    ctrl = read_in('ctrl',m,e,'Fwall_70S_expl')
+    exp = read_in('4xCO2',m,e,'Fwall_70S_expl')
     diff = exp - ctrl
     
-    pathout = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_AHT_70N_expl.nc'
+    pathout = '/dx02/janoski/cesm/vert_int_feedbacks/b40.1850.cam5-lens.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_AHT_70S_expl.nc'
     diff.to_netcdf(pathout)
     
 for e in range(1,end,1):

@@ -5,7 +5,9 @@
 # and to find difference after 4xCO2
 
 # By: Ty Janoski
-# Updated: 12.30.21
+# Updated: 03.30.2023
+
+# for Arctic/Antarctic, change latitude, sign of terms, and output file name
 
 
 # import statments
@@ -36,7 +38,12 @@ Cp = 1003
 L = 2.5e6
 g = 9.81
 
-# JANUARY INITIALIZATIONS 
+# for some reason, hyai and hybi are not in the July initalization netCDFs,
+# so let's grab it from one of the control simulations.
+hyai = xr.open_dataset('/dx01/janoski/cesm/output/b40.1850.cam5-lens.ctrl.01.01.h1_covar.nc',
+                     drop_variables=['hyam','hybm','P0','time_bnds','PS','VQ','VZ','VT']).hyai
+hybi = xr.open_dataset('/dx01/janoski/cesm/output/b40.1850.cam5-lens.ctrl.01.01.h1_covar.nc',
+                     drop_variables=['hyam','hybm','P0','time_bnds','PS','VQ','VZ','VT']).hybi
 
 # get starting month
 m = int(input('Enter 1 or 7 for January or July initializations, respectively: '))
@@ -54,10 +61,16 @@ for s in ['ctrl','4xCO2']:
     # read in simulations (one ensemble member at a time)
     for e in range(1,end,1):
         print(e)
-        ds = read_in(s,m,e,'covar')
+        if(m==1):
+            ds = read_in(s,m,e,'covar')
+        elif(m==7):
+            VQ = read_in(s,m,e,'VQ')
+            VT = read_in(s,m,e,'VT')
+            VZ = read_in(s,m,e,'VZ')
+            ds = xr.merge([VQ,VT,VZ,hyai,hybi])
 
         # we are going to need the closest latitude to our 70 degree N band
-        lat = float(ds.lat.sel(lat=70,method='nearest'))
+        lat = float(ds.lat.sel(lat=-70,method='nearest'))
         
         # to get units of W/m^2, we divide by the area of the Arctic (north of our lat)
         area = 2*np.pi*a**2 * (np.sin(np.deg2rad(-70)) - np.sin(np.deg2rad(-90)))
@@ -77,9 +90,9 @@ for s in ['ctrl','4xCO2']:
         dp = np.array((ds.hyai * ds.P0 + ds.hybi * ds.PS).diff(dim='ilev').transpose('time','ilev','lon'))
 
         # get components of MSE transport
-        VQ = (((ds.VQ * L * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VQ')
-        VT = (((ds.VT * Cp * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VT')
-        VZ = (((ds.VZ * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VZ')
+        VQ = -1 * (((ds.VQ * L * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VQ')
+        VT = -1 * (((ds.VT * Cp * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VT')
+        VZ = -1 * (((ds.VZ * dp).sum(dim='lev') * dx).sum(dim='lon') / g).rename('VZ')
 
         # get components of MSE transport
         # the below method is only if you want to avoid integrating over lon
@@ -93,5 +106,5 @@ for s in ['ctrl','4xCO2']:
 
         ds_out = xr.merge([VQ,VT,VZ,MSE])/area
 
-        filename = 'b40.1850.cam5-lens.'+s+'.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_Fwall_70N_expl.nc'
+        filename = 'b40.1850.cam5-lens.'+s+'.'+str(f"{m:02d}")+'.'+str(f"{e:02d}")+'.h1_Fwall_70S_expl.nc'
         ds_out.to_netcdf('/dx02/janoski/cesm/ctrl_4xCO2_transports/'+filename)
