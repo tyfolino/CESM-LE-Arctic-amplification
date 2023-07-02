@@ -60,10 +60,10 @@ for d in domains:
             dSAT = xr.open_dataarray(lead+'dSAT.nc')
             local = fin/dSAT.mean(dim='ens')
             normalized = (local + norm)*dSAT.mean(dim='ens')/norm
-        elif(f=='Ts_tropo_sfc.nc'):
-            dSAT = xr.open_dataarray(lead+'dSAT.nc')
-            local = fin/dSAT.mean(dim='ens')
-            normalized = (local - glb_Ts) * dSAT.mean(dim='ens')/norm
+        # elif(f=='Ts_tropo_sfc.nc'):
+        #     dSAT = xr.open_dataarray(lead+'dSAT.nc')
+        #     local = fin/dSAT.mean(dim='ens')
+        #     normalized = (local - glb_Ts) * dSAT.mean(dim='ens')/norm
         else:
             # normalize the variable
             normalized = fin/norm
