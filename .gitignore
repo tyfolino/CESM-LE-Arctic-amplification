@@ -2,3 +2,5 @@
 .ipynb_checkpoints/
 CO2_test.ipynb
 spav_test.ipynb
+Vertical_interpolation_test.ipynb
+.gitignore
